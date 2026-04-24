@@ -36,7 +36,72 @@ def crear_kb() -> KnowledgeBase:
     frasco_arsenico = Term("frasco_arsenico")
 
     # === YOUR CODE HERE ===
+    # HECHOS
+    kb.add_fact(Predicate("huellas", (reynaldo, frasco_arsenico)))
 
+    kb.add_fact(Predicate("lejos_escena", (pablo,)))
+    kb.add_fact(Predicate("lejos_escena", (bernardo,)))
+
+    kb.add_fact(Predicate("acusa", (pablo, reynaldo)))
+
+    kb.add_fact(Predicate("da_coartada", (margot, reynaldo)))
+    kb.add_fact(Predicate("da_coartada", (reynaldo, margot)))
+
+    kb.add_fact(Predicate("no_coartada_verificada", (reynaldo,)))
+
+
+    # REGLAS
+    X = Term("$X")
+    Y = Term("$Y")
+    Z = Term("$Z")
+
+    # 1. huellas -> evidencia directa
+    kb.add_rule(Rule(
+        (Predicate("huellas", (X, Z)),),
+        Predicate("evidencia_directa", (X,))
+    ))
+
+    # 2. lejos -> descartado
+    kb.add_rule(Rule(
+        (Predicate("lejos_escena", (X,)),),
+        Predicate("descartado", (X,))
+    ))
+
+    # 3. descartado y acusa -> testimonio confiable
+    kb.add_rule(Rule(
+        (
+            Predicate("descartado", (X,)),
+            Predicate("acusa", (X, Y))
+        ),
+        Predicate("testimonio_confiable", (X, Y))
+    ))
+
+    # 4. evidencia y sin coartada -> culpable
+    kb.add_rule(Rule(
+        (
+            Predicate("evidencia_directa", (X,)),
+            Predicate("no_coartada_verificada", (X,))
+        ),
+        Predicate("culpable", (X,))
+    ))
+
+    # 5. da coartada a culpable -> encubridor
+    kb.add_rule(Rule(
+        (
+            Predicate("da_coartada", (X, Y)),
+            Predicate("culpable", (Y,))
+        ),
+        Predicate("encubridor", (X,))
+    ))
+
+    # 6. coartada mutua -> coartada cruzada
+    kb.add_rule(Rule(
+        (
+            Predicate("da_coartada", (X, Y)),
+            Predicate("da_coartada", (Y, X))
+        ),
+        Predicate("coartada_cruzada", (X, Y))
+    ))
     # === END YOUR CODE ===
 
     return kb

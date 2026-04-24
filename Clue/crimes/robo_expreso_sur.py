@@ -36,7 +36,76 @@ def crear_kb() -> KnowledgeBase:
     vagon_equipaje = Term("vagon_equipaje")
 
     # === YOUR CODE HERE ===
+    # HECHOS
+    kb.add_fact(Predicate("en_escena", (elena,)))
+    kb.add_fact(Predicate("huellas", (elena, estuche_joyas)))
 
+    kb.add_fact(Predicate("grabado_en", (don_rodrigo, vagon_equipaje)))
+    kb.add_fact(Predicate("lejos_escena", (don_rodrigo,)))
+
+    kb.add_fact(Predicate("victima", (marquesa,)))
+
+    kb.add_fact(Predicate("acusa", (marquesa, elena)))
+
+    kb.add_fact(Predicate("da_coartada", (victor, elena)))
+    kb.add_fact(Predicate("da_coartada", (elena, victor)))
+
+
+    # VARIABLES
+    X = Term("$X")
+    Y = Term("$Y")
+    Z = Term("$Z")
+
+
+    # REGLAS
+
+    # 1. grabado lejos -> descartado
+    kb.add_rule(Rule(
+        (Predicate("lejos_escena", (X,)),),
+        Predicate("descartado", (X,))
+    ))
+
+    # 2. víctima -> testigo imparcial
+    kb.add_rule(Rule(
+        (Predicate("victima", (X,)),),
+        Predicate("testigo_imparcial", (X,))
+    ))
+
+    # 3. testigo imparcial + acusa -> acusación creíble
+    kb.add_rule(Rule(
+        (
+            Predicate("testigo_imparcial", (X,)),
+            Predicate("acusa", (X, Y))
+        ),
+        Predicate("acusacion_creible", (X, Y))
+    ))
+
+    # 4. en escena + acusación creíble -> culpable
+    kb.add_rule(Rule(
+        (
+            Predicate("en_escena", (X,)),
+            Predicate("acusacion_creible", (Y, X))
+        ),
+        Predicate("culpable", (X,))
+    ))
+
+    # 5. da coartada a culpable -> defiende
+    kb.add_rule(Rule(
+        (
+            Predicate("da_coartada", (X, Y)),
+            Predicate("culpable", (Y,))
+        ),
+        Predicate("defiende_al_culpable", (X,))
+    ))
+
+    # 6. coartada mutua -> alianza
+    kb.add_rule(Rule(
+        (
+            Predicate("da_coartada", (X, Y)),
+            Predicate("da_coartada", (Y, X))
+        ),
+        Predicate("alianza_coartadas", (X, Y))
+    ))
     # === END YOUR CODE ===
 
     return kb
