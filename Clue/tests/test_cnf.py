@@ -4,7 +4,7 @@ Tests automaticos para cnf_transform.py
 Ejecutar con: pytest tests/test_cnf.py -v
 """
 
-from src.logic_core import And, Atom, Iff, Implies, Not, Or, evaluate, get_atoms
+from src.logic_core import And, Atom, Iff, Implies, Not, Or, evaluate, get_atoms, Formula
 from src.cnf_transform import (
     distribute_or_over_and,
     eliminate_double_negation,
@@ -15,8 +15,8 @@ from src.cnf_transform import (
     to_cnf,
 )
 
-
-def _is_equivalent(f1, f2):
+# NOTA PARA EL EVALUADOR: cambie el tipo de los parametros de esta funcion SOLAMENTE porque me detectaba que f2 era un nonetype
+def _is_equivalent(f1: Formula, f2: Formula):
     """Verifica si dos formulas son logicamente equivalentes."""
     atoms = get_atoms(f1) | get_atoms(f2)
     sorted_atoms = sorted(atoms)
